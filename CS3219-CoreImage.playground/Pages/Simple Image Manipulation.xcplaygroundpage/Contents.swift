@@ -3,7 +3,6 @@
 import UIKit
 import XCPlayground
 
-var str = "Hello, playground"
 var context = CIContext()
 
 var uiImage = UIImage(named: "crowd.jpg")
@@ -29,6 +28,7 @@ func chainFilters(image: CIImage, amount: Double) -> UIImage {
     // demo your CIFilter here
     let sepiaFilter = CIFilter(name: "CISepiaTone")
     sepiaFilter?.setValue(image, forKey: kCIInputImageKey)
+    sepiaFilter?.setValue(amount, forKey: kCIInputIntensityKey)
     
     let vignetteFilter = CIFilter(name: "CIVignette")
     vignetteFilter?.setValue(sepiaFilter?.outputImage, forKey: kCIInputImageKey)
@@ -39,12 +39,26 @@ func chainFilters(image: CIImage, amount: Double) -> UIImage {
     return UIImage(CGImage: renderedImage)
 }
 
-// demo adjusting brightness
-for var i = -0.75; i < 1.0; i = i + 0.25 {
-    let image = increaseBrightness(originalImage, amount: i)
-    imageView.image = image
-    XCPShowView("Brightness", view: imageView)
+func sepiaFilters(image: CIImage, amount: Double) -> UIImage {
+    var result = image
+    
+    let sepiaFilter = CIFilter(name: "CISepiaTone")
+    sepiaFilter?.setValue(image, forKey: kCIInputImageKey)
+    sepiaFilter?.setValue(amount, forKey: kCIInputIntensityKey)
+    result = sepiaFilter!.outputImage!
+    
+    let renderedImage = context.createCGImage(result, fromRect: image.extent)
+    return UIImage(CGImage: renderedImage)
 }
+
+let sepiaResult = sepiaFilters(originalImage, amount: 1.0)
+
+let myImage = chainFilters(originalImage, amount: 1)// demo adjusting brightness
+//for var i = -0.75; i < 1.0; i = i + 0.25 {
+  //  let image = increaseBrightness(originalImage, amount: i)
+    //imageView.image = image
+    //XCPShowView("Brightness", view: imageView)
+//}
 
 // demo old effect
 for var i: Double = 0; i < 1.0; i = i + 0.2 {
